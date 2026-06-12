@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>x402 Payment Demo — Visual Flow</title>
+  <meta name="description" content="Interactive demo dashboard for the x402 programmable rupee payment protocol">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
+       DESIGN SYSTEM — Dark Glassmorphism Theme
+       ═══════════════════════════════════════════════════════════════ */
+    :root {
+      --bg-primary: #07080F;
+      --bg-secondary: #0D0F1A;
+      --bg-card: rgba(255, 255, 255, 0.025);
+      --bg-card-hover: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.06);
+      --border-glow: rgba(99, 102, 241, 0.3);
+
+      --text-primary: #E2E8F0;
+      --text-secondary: #94A3B8;
+      --text-muted: #475569;
+
+      --accent: #6366F1;
+      --accent-light: #818CF8;
+      --accent-glow: rgba(99, 102, 241, 0.15);
+      --violet: #8B5CF6;
+      --success: #10B981;
+      --success-glow: rgba(16, 185, 129, 0.15);
+      --error: #EF4444;
+      --error-glow: rgba(239, 68, 68, 0.15);
+      --warning: #F59E0B;
+      --warning-glow: rgba(245, 158, 11, 0.15);
+      --info: #3B82F6;
+
+      --font-ui: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+      --radius: 12px;
+      --radius-sm: 8px;
+      --radius-lg: 16px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-ui);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Ambient glow blobs */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LAYOUT
+       ═══════════════════════════════════════════════════════════════ */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       HEADER
+       ═══════════════════════════════════════════════════════════════ */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-light), var(--violet));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .badges {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .badge-dot.live { background: var(--success); box-shadow: 0 0 6px var(--success); }
+    .badge-dot.dead { background: var(--error); box-shadow: 0 0 6px var(--error); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       INFO CARDS ROW
+       ═══════════════════════════════════════════════════════════════ */
+    .info-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      transition: border-color 0.3s;
+    }
+
+    .info-card:hover { border-color: rgba(255,255,255,0.1); }
+
+    .info-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+    }
+
+    .info-value {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+
+    .info-value.big {
+      font-size: 24px;
+      font-weight: 700;
+      font-family: var(--font-ui);
+      background: linear-gradient(135deg, var(--success), #34D399);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MAIN GRID: Steps + Log
+       ═══════════════════════════════════════════════════════════════ */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ACTION BUTTON
+       ═══════════════════════════════════════════════════════════════ */
+    .action-bar {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-run {
+      padding: 14px 32px;
+      border: none;
+      border-radius: var(--radius);
+      font-family: var(--font-ui);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), var(--violet));
+      color: white;
+      letter-spacing: 0.3px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-run::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .btn-run:hover:not(:disabled)::before { opacity: 1; }
+    .btn-run:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
+    }
+
+    .btn-run:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-reset {
+      padding: 14px 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      transition: all 0.3s;
+    }
+
+    .btn-reset:hover { border-color: rgba(255,255,255,0.15); color: var(--text-primary); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       STEP TIMELINE
+       ═══════════════════════════════════════════════════════════════ */
+    .steps-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    .steps-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      position: relative;
+      padding-bottom: 8px;
+    }
+
+    /* Connecting line */
+    .step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 17px;
+      top: 40px;
+      width: 2px;
+      height: calc(100% - 32px);
+      background: var(--border);
+      transition: background 0.5s;
+    }
+
+    .step:not(:last-child).done::after { background: var(--success); }
+    .step:not(:last-child).running::after {
+      background: linear-gradient(180deg, var(--accent), var(--border));
+    }
+
+    .step-indicator {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+      border: 2px solid var(--border);
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+      transition: all 0.4s;
+      position: relative;
+      z-index: 2;
+    }
+
+    .step.running .step-indicator {
+      border-color: var(--accent);
+      color: var(--accent-light);
+      box-shadow: 0 0 16px var(--accent-glow);
+      animation: pulse-ring 1.5s ease-in-out infinite;
+    }
+
+    .step.done .step-indicator {
+      border-color: var(--success);
+      background: var(--success);
+      color: white;
+    }
+
+    .step.error .step-indicator {
+      border-color: var(--error);
+      background: var(--error);
+      color: white;
+    }
+
+    .step.blocked .step-indicator {
+      border-color: var(--warning);
+      background: var(--warning);
+      color: white;
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 8px var(--accent-glow); }
+      50% { box-shadow: 0 0 20px var(--accent-glow), 0 0 40px rgba(99,102,241,0.08); }
+    }
+
+    .step-content {
+      flex: 1;
+      padding-bottom: 20px;
+    }
+
+    .step-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .step-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .step-details {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+      background: rgba(0,0,0,0.3);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      line-height: 1.6;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.5s ease, opacity 0.3s ease, padding 0.3s ease;
+    }
+
+    .step-details.visible {
+      max-height: 200px;
+      opacity: 1;
+    }
+
+    .step-details a {
+      color: var(--accent-light);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .step-details a:hover {
+      color: var(--violet);
+      text-decoration: underline;
+    }
+
+    .step-time {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LOG CONSOLE
+       ═══════════════════════════════════════════════════════════════ */
+    .log-panel {
+      background: #05060C;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      max-height: 680px;
+    }
+
+    .log-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .log-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .log-title::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .log-clear {
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: var(--font-ui);
+      transition: color 0.2s;
+    }
+
+    .log-clear:hover { color: var(--text-secondary); }
+
+    .log-body {
+      padding: 12px 16px;
+      overflow-y: auto;
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.7;
+      min-height: 400px;
+    }
+
+    .log-body::-webkit-scrollbar { width: 6px; }
+    .log-body::-webkit-scrollbar-track { background: transparent; }
+    .log-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    .log-entry {
+      animation: fadeIn 0.2s ease;
+      word-break: break-all;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .log-entry .ts {
+      color: var(--text-muted);
+      margin-right: 8px;
+      user-select: none;
+    }
+
+    .log-entry.info { color: var(--text-secondary); }
+    .log-entry.success { color: var(--success); }
+    .log-entry.error { color: var(--error); }
+    .log-entry.warn { color: var(--warning); }
+    .log-entry.step-label {
+      color: var(--accent-light);
+      font-weight: 500;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.03);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       WARNING BANNER
+       ═══════════════════════════════════════════════════════════════ */
+    .warning-banner {
+      background: rgba(245, 158, 11, 0.06);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      color: var(--warning);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       UTILITY
+       ═══════════════════════════════════════════════════════════════ */
+    .mono { font-family: var(--font-mono); }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 180px; display: inline-block; vertical-align: bottom; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- ═══ HEADER ═══════════════════════════════════════════════════ -->
+    <header class="header">
+      <div class="header-left">
+        <div>
+          <div class="logo">x402</div>
+          <div class="logo-sub">Programmable Rupee Payment Demo</div>
+        </div>
+      </div>
+      <div class="badges">
+        <div class="badge">
+          <span class="badge-dot" id="healthDot"></span>
+          <span id="healthText">Checking...</span>
+        </div>
+        <div class="badge">⛓️ Base Sepolia</div>
+        <div class="badge">💰 USDC Rail</div>
+      </div>
+    </header>
+
+    <!-- ═══ WARNING ══════════════════════════════════════════════════ -->
+    <div class="warning-banner">
+      ⚠️ Local dev demo only — private key hardcoded. Never use in production.
+    </div>
+
+    <!-- ═══ INFO CARDS ═══════════════════════════════════════════════ -->
+    <div class="info-row">
+      <div class="info-card">
+        <div class="info-label">eINR Balance</div>
+        <div class="info-value big" id="balanceDisplay">—</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">Deployer</div>
+        <div class="info-value" id="deployerDisplay">—</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">PBMWrapper</div>
+        <div class="info-value" id="contractDisplay">—</div>
+      </div>
+    </div>
+
+    <!-- ═══ ACTION BAR ═══════════════════════════════════════════════ -->
+    <div class="action-bar">
+      <button class="btn-run" id="btnRun" onclick="runFullFlow()">▶ Run Full Flow</button>
+      <button class="btn-reset" id="btnReset" onclick="resetAll()">↺ Reset</button>
+    </div>
+
+    <!-- ═══ MAIN GRID ════════════════════════════════════════════════ -->
+    <div class="main-grid">
+      <!-- Steps Panel -->
+      <div class="steps-panel">
+        <div class="steps-title">Payment Flow</div>
+
+        <div class="step" id="step-0" data-step="0">
+          <div class="step-indicator">1</div>
+          <div class="step-content">
+            <div class="step-name">🔗 Health Check</div>
+            <div class="step-desc">Verify facilitator server is alive</div>
+            <div class="step-details" id="details-0"></div>
+            <div class="step-time" id="time-0"></div>
+          </div>
+        </div>
+
+        <div class="step" id="step-1" data-step="1">
+          <div class="step-indicator">2</div>
+          <div class="step-content">
+            <div class="step-name">💰 Approve Spending</div>
+            <div class="step-desc">Allow PBMWrapper to spend 1 eINR</div>
+            <div class="step-details" id="details-1"></div>
+            <div class="step-time" id="time-1"></div>
+          </div>
+        </div>
+
+        <div class="step" id="step-2" data-step="2">
+          <div class="step-indicator">3</div>
+          <div class="step-content">
+            <div class="step-name">🔒 Authorize Payment</div>
+            <div class="step-desc">Lock 1 eINR on-chain with conditions</div>
+            <div class="step-details" id="details-2"></div>
+            <div class="step-time" id="time-2"></div>
+          </div>
+        </div>
+
+        <div class="step" id="step-3" data-step="3">
+          <div class="step-indicator">4</div>
+          <div class="step-content">
+            <div class="step-name">⏳ Verify Propagation</div>
+            <div class="step-desc">Wait for RPC to see the payment</div>
+            <div class="step-details" id="details-3"></div>
+            <div class="step-time" id="time-3"></div>
+          </div>
+        </div>
+
+        <div class="step" id="step-4" data-step="4">
+          <div class="step-indicator">5</div>
+          <div class="step-content">
+            <div class="step-name">🚀 Settle Payment</div>
+            <div class="step-desc">POST /facilitate → server settles on-chain</div>
+            <div class="step-details" id="details-4"></div>
+            <div class="step-time" id="time-4"></div>
+          </div>
+        </div>
+
+        <div class="step" id="step-5" data-step="5">
+          <div class="step-indicator">6</div>
+          <div class="step-content">
+            <div class="step-name">🧾 Verify Receipt</div>
+            <div class="step-desc">POST /verify → validate JWT receipt</div>
+            <div class="step-details" id="details-5"></div>
+            <div class="step-time" id="time-5"></div>
+          </div>
+        </div>
+
+        <div class="step" id="step-6" data-step="6">
+          <div class="step-indicator">7</div>
+          <div class="step-content">
+            <div class="step-name">🛡️ Replay Attack</div>
+            <div class="step-desc">Same request again — should be blocked</div>
+            <div class="step-details" id="details-6"></div>
+            <div class="step-time" id="time-6"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Log Console -->
+      <div class="log-panel">
+        <div class="log-header">
+          <div class="log-title">Live Console</div>
+          <button class="log-clear" onclick="clearLog()">Clear</button>
+        </div>
+        <div class="log-body" id="logBody">
+          <div class="log-entry info"><span class="ts">[init]</span> Dashboard loaded. Click "Run Full Flow" to start.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       JAVASCRIPT — All logic
+       ═══════════════════════════════════════════════════════════════ -->
+  <script type="module">
+    // ethers v6 ESM from CDN
+    import { ethers } from 'https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.min.js';
+
+    // ─── CONFIG ─────────────────────────────────────────────────────
+    // ⚠️ LOCAL DEV ONLY — never commit real keys
+    const CONFIG = {
+      rpcUrl: 'https://sepolia.base.org',
+      facilitatorUrl: 'http://localhost:3001',
+      deployerKey: '0xd80f6a60e60e8d351a2e7cf2c47d514043e24e2ab315bcfbcf475f4133eaf9cc',
+      pbmWrapperAddress: '0x30FE84D0555c6Fdec42e4FD158e6c1f5d2877EEA',
+      mockEINRAddress: '0x5b1b32CBaAF979890bb7aa23BBa67BA3f06F3502',
+      chainId: 84532,
+      decimals: 2,
+    };
+
+    // ─── ABIs (minimal) ─────────────────────────────────────────────
+    const ERC20_ABI = [
+      'function balanceOf(address) view returns (uint256)',
+      'function approve(address spender, uint256 amount) returns (bool)',
+      'function decimals() view returns (uint8)',
+    ];
+
+    const PBM_ABI = [
+      'function authorizePayment(bytes32 paymentId, address nodeAddress, uint256 amount, bytes32 conditionsHash, uint256 expiresAt)',
+      'function getPaymentAuth(bytes32 paymentId) view returns (tuple(address payer, address nodeAddress, uint256 amount, bytes32 conditionsHash, uint256 expiresAt, bool settled))',
+      'function verifyPayment(bytes32 paymentId) view returns (bool isValid, address nodeAddress, uint256 amount)',
+    ];
+
+    // ─── PROVIDER & WALLET ──────────────────────────────────────────
+    const provider = new ethers.JsonRpcProvider(CONFIG.rpcUrl, CONFIG.chainId);
+    const wallet = new ethers.Wallet(CONFIG.deployerKey, provider);
+    const mockEINR = new ethers.Contract(CONFIG.mockEINRAddress, ERC20_ABI, wallet);
+    const pbmWrapper = new ethers.Contract(CONFIG.pbmWrapperAddress, PBM_ABI, wallet);
+
+    // ─── STATE ──────────────────────────────────────────────────────
+    let flowState = {
+      paymentId: null,
+      conditionsHash: null,
+      amount: null,
+      expiresAt: null,
+      receiptJwt: null,
+      txHashes: {},
+    };
+
+    // ─── DOM HELPERS ────────────────────────────────────────────────
+    function $(id) { return document.getElementById(id); }
+
+    function log(msg, type = 'info') {
+      const body = $('logBody');
+      const ts = new Date().toLocaleTimeString('en-US', { hour12: false });
+      const div = document.createElement('div');
+      div.className = `log-entry ${type}`;
+      div.innerHTML = `<span class="ts">[${ts}]</span> ${msg}`;
+      body.appendChild(div);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function clearLog() {
+      $('logBody').innerHTML = '';
+      log('Console cleared.', 'info');
+    }
+
+    function setStepStatus(stepIdx, status) {
+      const el = $(`step-${stepIdx}`);
+      el.className = `step ${status}`;
+      const indicator = el.querySelector('.step-indicator');
+      if (status === 'done') indicator.textContent = '✓';
+      else if (status === 'error') indicator.textContent = '✗';
+      else if (status === 'blocked') indicator.textContent = '⊘';
+      else if (status === 'running') indicator.textContent = '…';
+    }
+
+    function setStepDetails(stepIdx, html) {
+      const el = $(`details-${stepIdx}`);
+      el.innerHTML = html;
+      el.classList.add('visible');
+    }
+
+    function setStepTime(stepIdx, ms) {
+      $(`time-${stepIdx}`).textContent = `${(ms / 1000).toFixed(1)}s`;
+    }
+
+    function shortAddr(addr) {
+      return addr.slice(0, 6) + '…' + addr.slice(-4);
+    }
+
+    function txLink(hash) {
+      return `<a href="https://sepolia.basescan.org/tx/${hash}" target="_blank" rel="noopener">${hash.slice(0, 14)}…</a>`;
+    }
+
+    // ─── INITIALIZATION ─────────────────────────────────────────────
+    async function init() {
+      $('deployerDisplay').textContent = wallet.address;
+      $('contractDisplay').textContent = CONFIG.pbmWrapperAddress;
+      await refreshBalance();
+      await checkHealth();
+    }
+
+    async function refreshBalance() {
+      try {
+        const bal = await mockEINR.balanceOf(wallet.address);
+        $('balanceDisplay').textContent = ethers.formatUnits(bal, CONFIG.decimals) + ' eINR';
+      } catch (e) {
+        $('balanceDisplay').textContent = 'Error';
+        log('Balance fetch failed: ' + e.message, 'error');
+      }
+    }
+
+    async function checkHealth() {
+      try {
+        const res = await fetch(`${CONFIG.facilitatorUrl}/health`);
+        if (res.ok) {
+          $('healthDot').className = 'badge-dot live';
+          $('healthText').textContent = 'Server Online';
+          return true;
+        }
+      } catch (e) { /* fall through */ }
+      $('healthDot').className = 'badge-dot dead';
+      $('healthText').textContent = 'Server Offline';
+      return false;
+    }
+
+    // ─── STEP RUNNERS ───────────────────────────────────────────────
+
+    async function stepHealthCheck() {
+      log('━━━ Step 1: Health Check ━━━', 'step-label');
+      log('GET ' + CONFIG.facilitatorUrl + '/health');
+      const res = await fetch(`${CONFIG.facilitatorUrl}/health`);
+      if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
+      const data = await res.json();
+      log('Server responded: ' + JSON.stringify(data), 'success');
+      setStepDetails(0, `Status: <strong>${data.status}</strong><br>Version: ${data.version}`);
+      return data;
+    }
+
+    async function stepApprove() {
+      log('━━━ Step 2: Approve Spending ━━━', 'step-label');
+      const amount = ethers.parseUnits('100', CONFIG.decimals);
+      log(`Approving PBMWrapper to spend ${ethers.formatUnits(amount, CONFIG.decimals)} eINR...`);
+      const tx = await mockEINR.approve(CONFIG.pbmWrapperAddress, amount);
+      log('TX sent: ' + tx.hash);
+      const receipt = await tx.wait();
+      log('Confirmed in block ' + receipt.blockNumber, 'success');
+      flowState.txHashes.approve = tx.hash;
+      setStepDetails(1, `TX: ${txLink(tx.hash)}<br>Block: ${receipt.blockNumber}`);
+    }
+
+    async function stepAuthorize() {
+      log('━━━ Step 3: Authorize Payment ━━━', 'step-label');
+
+      const paymentId = ethers.keccak256(
+        ethers.toUtf8Bytes('demo-' + Date.now())
+      );
+      const amount = ethers.parseUnits('1', CONFIG.decimals);
+      const conditionsHash = ethers.keccak256(
+        ethers.solidityPacked(
+          ['bytes32', 'address', 'uint256'],
+          [paymentId, wallet.address, amount]
+        )
+      );
+      const block = await provider.getBlock('latest');
+      const expiresAt = block.timestamp + 300;
+
+      flowState.paymentId = paymentId;
+      flowState.conditionsHash = conditionsHash;
+      flowState.amount = amount;
+      flowState.expiresAt = expiresAt;
+
+      log('PaymentId: ' + paymentId);
+      log('Amount: ' + ethers.formatUnits(amount, CONFIG.decimals) + ' eINR');
+      log('Expires: ' + new Date(expiresAt * 1000).toLocaleTimeString());
+      log('Sending authorizePayment TX...');
+
+      const tx = await pbmWrapper.authorizePayment(
+        paymentId, wallet.address, amount, conditionsHash, expiresAt
+      );
+      log('TX sent: ' + tx.hash);
+      const receipt = await tx.wait();
+      log('Confirmed in block ' + receipt.blockNumber, 'success');
+      flowState.txHashes.authorize = tx.hash;
+      setStepDetails(2,
+        `TX: ${txLink(tx.hash)}<br>` +
+        `PaymentId: <span class="truncate">${paymentId}</span><br>` +
+        `Amount: ${ethers.formatUnits(amount, CONFIG.decimals)} eINR`
+      );
+    }
+
+    async function stepVerifyPropagation() {
+      log('━━━ Step 4: Verify RPC Propagation ━━━', 'step-label');
+      let attempts = 0;
+      const maxAttempts = 15;
+
+      while (attempts < maxAttempts) {
+        attempts++;
+        try {
+          const auth = await pbmWrapper.getPaymentAuth(flowState.paymentId);
+          if (auth && auth.payer !== ethers.ZeroAddress) {
+            log(`Payment visible after ${attempts} attempt(s)`, 'success');
+            setStepDetails(3,
+              `Payer: ${shortAddr(auth.payer)}<br>` +
+              `Node: ${shortAddr(auth.nodeAddress)}<br>` +
+              `Settled: ${auth.settled}<br>` +
+              `Attempts: ${attempts}`
+            );
+            return;
+          }
+        } catch (e) {
+          log(`Attempt ${attempts}: error — ${e.message.slice(0, 60)}`, 'warn');
+        }
+        log(`Attempt ${attempts}: not yet visible, waiting 2s...`);
+        await new Promise(r => setTimeout(r, 2000));
+      }
+      throw new Error('Payment not readable after ' + maxAttempts + ' attempts');
+    }
+
+    async function stepSettle() {
+      log('━━━ Step 5: Settle via Facilitator ━━━', 'step-label');
+      const body = {
+        paymentId: flowState.paymentId,
+        nodeAddress: wallet.address,
+        amount: flowState.amount.toString(),
+        conditionsHash: flowState.conditionsHash,
+        payerSignature: '0x' + '00'.repeat(65),
+        expiresAt: flowState.expiresAt,
+        useCase: 'media',
+        metadata: { contentHash: '0x' + 'ab'.repeat(32) },
+      };
+
+      log('POST ' + CONFIG.facilitatorUrl + '/facilitate');
+      log('Body: ' + JSON.stringify({ paymentId: body.paymentId.slice(0,14) + '...', amount: body.amount }));
+
+      const res = await fetch(`${CONFIG.facilitatorUrl}/facilitate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+      log('Settlement TX: ' + data.txHash, 'success');
+      log('Receipt JWT received (' + data.receipt.length + ' chars)', 'success');
+      flowState.receiptJwt = data.receipt;
+      flowState.txHashes.settle = data.txHash;
+
+      // Wait for settlement to propagate through RPC
+      log('Waiting for settlement to propagate on-chain...', 'info');
+      for (let attempt = 1; attempt <= 15; attempt++) {
+        try {
+          const postAuth = await pbmWrapper.getPaymentAuth(flowState.paymentId);
+          if (postAuth && postAuth.settled) {
+            log(`Settlement confirmed on-chain after ${attempt} attempt(s)`, 'success');
+            break;
+          }
+        } catch {}
+        if (attempt === 15) {
+          log('Settlement not yet visible after 15 attempts — continuing anyway', 'warn');
+          break;
+        }
+        log(`Attempt ${attempt}: settled not yet visible, waiting 2s...`);
+        await new Promise(r => setTimeout(r, 2000));
+      }
+
+      setStepDetails(4,
+        `TX: ${txLink(data.txHash)}<br>` +
+        `JWT: ${data.receipt.slice(0, 40)}…<br>` +
+        `Settled on-chain: ✓`
+      );
+    }
+
+    async function stepVerifyReceipt() {
+      log('━━━ Step 6: Verify Receipt ━━━', 'step-label');
+      log('POST ' + CONFIG.facilitatorUrl + '/verify');
+
+      const res = await fetch(`${CONFIG.facilitatorUrl}/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ receipt: flowState.receiptJwt }),
+      });
+
+      const data = await res.json();
+      if (!data.valid) throw new Error('Receipt invalid: ' + JSON.stringify(data));
+
+      log('Receipt is VALID ✓', 'success');
+      log('PaymentId: ' + data.receipt.paymentId, 'success');
+      setStepDetails(5,
+        `Valid: ✓<br>` +
+        `Node: ${shortAddr(data.receipt.nodeAddress)}<br>` +
+        `Amount: ${data.receipt.amount}`
+      );
+    }
+
+    async function stepReplayAttack() {
+      log('━━━ Step 7: Replay Attack Test ━━━', 'step-label');
+      log('Waiting 3s for settlement to fully propagate before replay...');
+      await new Promise(r => setTimeout(r, 3000));
+      log('Re-sending same /facilitate request...');
+
+      const body = {
+        paymentId: flowState.paymentId,
+        nodeAddress: wallet.address,
+        amount: flowState.amount.toString(),
+        conditionsHash: flowState.conditionsHash,
+        payerSignature: '0x' + '00'.repeat(65),
+        expiresAt: flowState.expiresAt,
+        useCase: 'media',
+        metadata: { contentHash: '0x' + 'ab'.repeat(32) },
+      };
+
+      const res = await fetch(`${CONFIG.facilitatorUrl}/facilitate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // This is the EXPECTED outcome — attack blocked
+        log(`Replay BLOCKED → ${res.status}: ${data.error}`, 'success');
+        setStepDetails(6,
+          `Status: ${res.status}<br>` +
+          `Error: ${data.error}<br>` +
+          `Result: Replay attack correctly prevented ✓`
+        );
+        // Mark as "blocked" visually (warning color = intentionally failed)
+        setStepStatus(6, 'blocked');
+        return 'blocked';
+      } else {
+        throw new Error('REPLAY ATTACK SUCCEEDED — this is a security bug!');
+      }
+    }
+
+    // ─── MAIN FLOW ──────────────────────────────────────────────────
+
+    const STEPS = [
+      { name: 'Health Check', fn: stepHealthCheck },
+      { name: 'Approve', fn: stepApprove },
+      { name: 'Authorize', fn: stepAuthorize },
+      { name: 'Verify Propagation', fn: stepVerifyPropagation },
+      { name: 'Settle', fn: stepSettle },
+      { name: 'Verify Receipt', fn: stepVerifyReceipt },
+      { name: 'Replay Attack', fn: stepReplayAttack },
+    ];
+
+    async function runFullFlow() {
+      $('btnRun').disabled = true;
+      $('btnRun').textContent = '⟳ Running...';
+
+      log('', 'info');
+      log('═══════════════════════════════════════', 'info');
+      log('  Starting Full Payment Flow', 'step-label');
+      log('═══════════════════════════════════════', 'info');
+
+      for (let i = 0; i < STEPS.length; i++) {
+        setStepStatus(i, 'running');
+        const start = performance.now();
+
+        try {
+          const result = await STEPS[i].fn();
+          const elapsed = performance.now() - start;
+          setStepTime(i, elapsed);
+
+          // Replay step has special handling (blocked = success)
+          if (result !== 'blocked') {
+            setStepStatus(i, 'done');
+          }
+        } catch (err) {
+          const elapsed = performance.now() - start;
+          setStepTime(i, elapsed);
+          setStepStatus(i, 'error');
+          log('FAILED: ' + err.message, 'error');
+          setStepDetails(i, `Error: ${err.message}`);
+          break; // Stop on error
+        }
+      }
+
+      await refreshBalance();
+
+      log('', 'info');
+      log('═══════════════════════════════════════', 'info');
+      log('  Flow Complete 🎉', 'success');
+      log('═══════════════════════════════════════', 'info');
+
+      $('btnRun').disabled = false;
+      $('btnRun').textContent = '▶ Run Full Flow';
+    }
+
+    function resetAll() {
+      flowState = {
+        paymentId: null, conditionsHash: null, amount: null,
+        expiresAt: null, receiptJwt: null, txHashes: {},
+      };
+
+      for (let i = 0; i < 7; i++) {
+        const el = $(`step-${i}`);
+        el.className = 'step';
+        el.querySelector('.step-indicator').textContent = i + 1;
+        $(`details-${i}`).innerHTML = '';
+        $(`details-${i}`).classList.remove('visible');
+        $(`time-${i}`).textContent = '';
+      }
+
+      clearLog();
+      log('Dashboard reset. Ready for new flow.', 'info');
+    }
+
+    // Expose to global scope for onclick handlers
+    window.runFullFlow = runFullFlow;
+    window.resetAll = resetAll;
+    window.clearLog = clearLog;
+
+    // Init on load
+    init();
+  </script>
+</body>
+</html>

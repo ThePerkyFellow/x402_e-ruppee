@@ -1,0 +1,21 @@
+{
+  "name": "x402-rupee",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Programmable Rupee infrastructure for the agentic economy — x402 + PBM + e-Rupee",
+  "author": "ThePerkyFellow",
+  "license": "MIT",
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "dev": "turbo run dev",
+    "clean": "turbo run clean"
+  },
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "turbo": "^2.9.16"
+  }
+}

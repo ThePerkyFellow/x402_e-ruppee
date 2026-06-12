@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+artifacts/
+cache/
+typechain-types/
+
+# Environment
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Turbo
+.turbo/
+
+# Coverage
+coverage/
+
+# Hardhat
+packages/contracts/cache/
+packages/contracts/artifacts/

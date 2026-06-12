@@ -1,0 +1,16 @@
+{
+  "network": "base-sepolia",
+  "chainId": 84532,
+  "deployer": "0xB088738DB81B1E864b4971172e3200321A53477B",
+  "timestamp": "2026-06-11T17:30:53.102Z",
+  "contracts": {
+    "MockEINR": {
+      "address": "0x5b1b32CBaAF979890bb7aa23BBa67BA3f06F3502",
+      "txHash": "0xe9e278f80bf64b8f998bc2a1606524d7079984b5eebc7871ad2b3841b2acece9"
+    },
+    "PBMWrapper": {
+      "address": "0x30FE84D0555c6Fdec42e4FD158e6c1f5d2877EEA",
+      "txHash": "0x4203ccdb25923d0189b8b45d96bb4cc4d110db9bed63eec2a0ab0eccd4a30e9e"
+    }
+  }
+}
