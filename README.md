@@ -339,7 +339,7 @@ For first-time contributors, look for issues tagged `good first issue`. If you w
 - [x402 GitHub](https://github.com/coinbase/x402) — reference implementation
 - [MAS Project Orchid](https://www.mas.gov.sg/schemes-and-initiatives/project-orchid) — the Singapore PBM system this adapts
 - [MAS Orchid Blueprint PDF](https://www.mas.gov.sg/-/media/mas-media-library/development/fintech/project-orchid/orchid-blueprint-final.pdf) — full PBM architecture document
-- [RBI CBDC Concept Note](https://rbidocs.rbi.org.in/rdocs/content/pdfs/CBDC231121.pdf) — RBI's digital rupee framework
+- [RBI CBDC Concept Note]([https://rbidocs.rbi.org.in/rdocs/content/pdfs/CBDC231121.pdf](https://www.rbi.org.in/commonman/Upload/English/FAQs/PDFs/DigitalRupee09012025.pdf)) — RBI's digital rupee framework
 - [RBI CBDC Sandbox](mailto:rbicbdcsandbox@rbi.org.in) — CAT Sandbox access
 
 ---
