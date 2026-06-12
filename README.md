@@ -263,11 +263,9 @@ const response = await client.payAndFetch('http://api.example.com/data');
 |---|---|---|
 | **Phase 1** | PBM contracts + x402 facilitator on Base Sepolia (USDC) | ✅ Active |
 | **Phase 2** | Contract audit + mainnet deployment | 🔜 Next |
-| **Phase 3** | NammaPay Media — torrent seeder micropayments | 🔜 Planned |
-| **Phase 4** | NammaCompute — distributed GPU marketplace | 🔜 Planned |
-| **Phase 5** | Incorporate Pvt Ltd, apply to RBI CBDC retail sandbox | 🔜 Parallel |
-| **Phase 6** | Swap USDC adapter for e-Rupee via RBI CAT Sandbox | 🔜 Planned |
-| **Phase 7** | BRICS CBDC multi-currency support | 🔭 Long-term |
+| **Phase 3** | Incorporate Pvt Ltd, apply to RBI CBDC retail sandbox | 🔜 Parallel |
+| **Phase 4** | Swap USDC adapter for e-Rupee via RBI CAT Sandbox | 🔜 Planned |
+| **Phase 5** | BRICS CBDC multi-currency support | 🔭 Long-term |
 
 ### The BRICS angle
 
@@ -302,8 +300,6 @@ Building in public. All contributors welcome — especially if you bring one or 
 - **Solidity experience** — contract optimization, security review, ZK proof integration
 - **Node.js / TypeScript** — facilitator server, SDK, task scheduler
 - **RBI CBDC knowledge** — sandbox access, API schema, compliance guidance
-- **WebTorrent / P2P networking** — NammaPay Media seeder architecture
-- **GPU / distributed compute** — NammaCompute worker and scheduler
 - **Indian fintech / regulatory** — PA license path, partner bank introductions
 
 ### How to contribute
@@ -321,6 +317,7 @@ pnpm test
 Please read the implementation plan (`x402_erupee_implementation_plan.md`) before starting on any feature — it has the architectural context for every decision.
 
 For first-time contributors, look for issues tagged `good first issue`. If you want to discuss an idea before building it, open a discussion.
+
 
 ---
 
